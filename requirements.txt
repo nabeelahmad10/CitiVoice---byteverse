@@ -1,0 +1,11 @@
+requests 
+SpeechRecognition
+Flask 
+flask-socketio 
+pdf2image 
+pytesseract 
+Pillow 
+PyMuPDF 
+langdetect 
+google-generativeai 
+gTTS

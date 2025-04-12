@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency SOS - CitiVoice</title>
+    <style>
+        :root {
+            --primary: #e53e3e;
+            --primary-hover: #c53030;
+            --secondary: #2b6cb0;
+            --background: #ffffff;
+            --text: #1a202c;
+            --light-bg: #f7fafc;
+            --border: #e2e8f0;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        /* Back Button Styles */
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: grey;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.25rem;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.2s, transform 0.2s;
+            margin: 1rem 0;
+            width: fit-content;
+        }
+        .back-button:hover {
+            background-color: #d49089;
+            transform: translateX(-5px);
+        }
+        .back-button svg {
+            transition: transform 0.2s;
+        }
+        .back-button:hover svg {
+            transform: translateX(-3px);
+        }
+        /* SOS Button Styles */
+        .sos-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        .sos-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(229, 62, 62, 0.5), 
+                        0 0 40px rgba(229, 62, 62, 0.3), 
+                        0 0 60px rgba(229, 62, 62, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .sos-button:active {
+            transform: scale(0.95);
+        }
+        .sos-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .sos-button:active::before {
+            opacity: 1;
+        }
+        .sos-progress {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid transparent;
+            border-top-color: white;
+            border-right-color: white;
+            opacity: 0;
+            transform: rotate(0deg);
+            transition: opacity 0.2s;
+        }
+        .sos-progress.active {
+            opacity: 1;
+            animation: progress 3s linear forwards;
+        }
+        @keyframes progress {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .sos-instructions {
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        .sos-status {
+            margin-top: 1rem;
+            font-size: 1rem;
+            height: 1.5rem;
+        }
+        .emergency-alert {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .emergency-alert-icon {
+            font-size: 2rem;
+        }
+        .emergency-numbers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .emergency-card {
+            background-color: var(--light-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .emergency-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .emergency-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .emergency-card p {
+            margin-bottom: 1rem;
+        }
+        .emergency-card .phone {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+            display: block;
+            margin: 0.5rem 0;
+        }
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.25rem;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        .resources-section {
+            margin: 2rem 0;
+        }
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .resource-item {
+            background-color: var(--light-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+        .resource-item h4 {
+            margin-bottom: 0.5rem;
+        }
+        footer {
+            background-color: var(--light-bg);
+            padding: 2rem 0;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+        .footer-section h3 {
+            margin-bottom: 1rem;
+        }
+        .footer-links {
+            list-style: none;
+        }
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        .footer-links a {
+            color: var(--text);
+            text-decoration: none;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .modal-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .calling-animation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        .calling-rings {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .ring {
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            margin: 0 5px;
+            animation: pulse 1s infinite ease-in-out;
+        }
+        .ring:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .ring:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
+        @media (max-width: 768px) {
+            .emergency-numbers {
+                grid-template-columns: 1fr;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .footer-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                </svg>
+                CitiVoice
+            </div>
+            <nav>
+                <a href="index.html" class="btn">Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Back Button -->
+        <a href="../index.html" class="back-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Home
+        </a>
+
+        <div class="emergency-alert">
+            <div class="emergency-alert-icon">⚠️</div>
+            <div>
+                <h2>Emergency SOS</h2>
+                <p>If you are experiencing a life-threatening emergency, press and hold the SOS button for 3 seconds to send an emergency WhatsApp message with your location.</p>
+            </div>
+        </div>
+
+        <div class="sos-container">
+            <button id="sosButton" class="sos-button">
+                SOS
+                <div id="sosProgress" class="sos-progress"></div>
+            </button>
+            <div class="sos-instructions">Press and hold for 3 seconds to send emergency alert via WhatsApp</div>
+            <div id="sosStatus" class="sos-status"></div>
+        </div>
+
+        <!-- (Additional emergency cards and resource sections unchanged) -->
+        <section class="emergency-numbers">
+            <div class="emergency-card">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    All-in-One Emergency
+                </h3>
+                <p>For police, fire, or medical emergencies</p>
+                <a href="tel:9572485883" class="phone">9572485883</a>
+                <a href="tel:9572485883" class="btn">Call Now</a>
+            </div>
+            <!-- Other emergency cards (Police, Fire, Ambulance) unchanged -->
+        </section>
+
+        <section class="resources-section">
+            <h2>Additional Emergency Resources</h2>
+            <div class="resources-grid">
+                <div class="resource-item">
+                    <h4>Women Helpline</h4>
+                    <p>24/7 support for women in distress</p>
+                    <a href="tel:1091" class="phone">1091</a>
+                </div>
+                <div class="resource-item">
+                    <h4>Child Helpline</h4>
+                    <p>Support for children in need of care and protection</p>
+                    <a href="tel:1098" class="phone">1098</a>
+                </div>
+                <div class="resource-item">
+                    <h4>Senior Citizen Helpline</h4>
+                    <p>Support for elderly citizens</p>
+                    <a href="tel:14567" class="phone">14567</a>
+                </div>
+                <div class="resource-item">
+                    <h4>National Emergency Response Centre</h4>
+                    <p>For disaster management and relief</p>
+                    <a href="tel:1070" class="phone">1070</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="resources-section">
+            <h2>Emergency Preparedness</h2>
+            <p>Being prepared for emergencies can help keep you and your family safe. Here are some resources to help you prepare:</p>
+            <div class="resources-grid">
+                <div class="resource-item">
+                    <h4>Disaster Management Authority</h4>
+                    <p>National Disaster Management Authority (NDMA) guidelines</p>
+                    <a href="https://ndma.gov.in/" target="_blank" class="btn btn-secondary">Learn More</a>
+                </div>
+                <div class="resource-item">
+                    <h4>Emergency Kit</h4>
+                    <p>Essential supplies for your emergency kit</p>
+                    <a href="https://ndma.gov.in/Preparedness/Individual" target="_blank" class="btn btn-secondary">Learn More</a>
+                </div>
+                <div class="resource-item">
+                    <h4>Emergency Alerts</h4>
+                    <p>Sign up for emergency alerts in your area</p>
+                    <a href="https://mausam.imd.gov.in/chennai/" target="_blank" class="btn btn-secondary">Weather Alerts</a>
+                </div>
+                <div class="resource-item">
+                    <h4>First Aid Training</h4>
+                    <p>Learn basic first aid skills</p>
+                    <a href="https://www.indianredcross.org/ircs/program/firstaid" target="_blank" class="btn btn-secondary">Get Trained</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Emergency Call Modal -->
+    <div id="emergencyModal" class="modal">
+        <div class="modal-content">
+            <button id="closeModal" class="modal-close">&times;</button>
+            <h3 class="modal-title">Emergency Alert Activated</h3>
+            <div class="calling-animation">
+                <div class="calling-rings">
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                </div>
+                <p>Sending emergency message via WhatsApp...</p>
+            </div>
+            <p>Your location is being shared with emergency responders.</p>
+            <div class="modal-buttons">
+                <button id="cancelEmergency" class="btn">Cancel</button>
+                <a href="tel:9572485883" id="callDirectly" class="btn">Call Now</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-section">
+                <h3>CitiVoice</h3>
+                <p>Your trusted resource for emergency information and assistance in India.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="emergency.html">Emergency Resources</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Accessibility</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container">
+            <p style="text-align: center; margin-top: 2rem;">&copy; 2025 CitiVoice. All rights reserved.</p>
+        </div>
+    </footer>
+  
+    <script>
+        // Modify getLocation to accept a callback
+        function getLocation(callback) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => { callback(position); },
+                    error => { console.error("Error getting location:", error); }
+                );
+            }
+        }
+        
+        // Trigger emergency by retrieving location and sending WhatsApp message
+        function triggerEmergency() {
+            sosStatus.textContent = "Emergency activated!";
+            sosStatus.style.color = "red";
+            sosStatus.style.fontWeight = "bold";
+            
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200, 100, 200]);
+            }
+            
+            // Get user location and then build WhatsApp message URL
+            getLocation(function(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                const message = "Emergency! Please help. My location: https://maps.google.com/?q=" + latitude + "," + longitude;
+                // Use the specified WhatsApp number: +91 9153194423 (remove any formatting)
+                const waUrl = "https://wa.me/919153194423?text=" + encodeURIComponent(message);
+                window.location.href = waUrl;
+            });
+            
+            console.log("Emergency alert triggered");
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const sosButton = document.getElementById('sosButton');
+            const sosProgress = document.getElementById('sosProgress');
+            const sosStatus = document.getElementById('sosStatus');
+            const emergencyModal = document.getElementById('emergencyModal');
+            const closeModal = document.getElementById('closeModal');
+            const cancelEmergency = document.getElementById('cancelEmergency');
+            const callDirectly = document.getElementById('callDirectly');
+            
+            let pressTimer;
+            let isHolding = false;
+            let emergencyActivated = false;
+            
+            // Start timer when button is pressed
+            sosButton.addEventListener('mousedown', startTimer);
+            sosButton.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                startTimer();
+            });
+            
+            // Clear timer when button is released
+            sosButton.addEventListener('mouseup', clearTimer);
+            sosButton.addEventListener('mouseleave', clearTimer);
+            sosButton.addEventListener('touchend', clearTimer);
+            sosButton.addEventListener('touchcancel', clearTimer);
+            
+            function startTimer() {
+                if (emergencyActivated) return;
+                isHolding = true;
+                sosProgress.classList.add('active');
+                sosStatus.textContent = "Hold for emergency...";
+                
+                pressTimer = setTimeout(function() {
+                    if (isHolding) {
+                        emergencyActivated = true;
+                        triggerEmergency();
+                        // Show modal with calling animation
+                        emergencyModal.style.display = "flex";
+                    }
+                }, 3000); // 3 seconds hold
+            }
+            
+            function clearTimer() {
+                if (emergencyActivated) return;
+                isHolding = false;
+                clearTimeout(pressTimer);
+                sosProgress.classList.remove('active');
+                sosStatus.textContent = "";
+            }
+            
+            // Reset emergency state
+            function resetEmergency() {
+                emergencyActivated = false;
+                sosStatus.textContent = "";
+                sosStatus.style.color = "";
+                sosStatus.style.fontWeight = "";
+                emergencyModal.style.display = "none";
+            }
+            
+            closeModal.addEventListener('click', resetEmergency);
+            cancelEmergency.addEventListener('click', resetEmergency);
+            
+            // Make phone links work better on mobile
+            const phoneLinks = document.querySelectorAll('.phone');
+            phoneLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (!navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/)) {
+                        e.preventDefault();
+                        alert('To call this number: ' + link.textContent + '\nPlease use your phone or a calling service.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

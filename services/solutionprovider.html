@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Problem Solver - AI Citizen Helpline</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f8fa;
+      margin: 0;
+      padding: 0;
+    }
+    .chat-container {
+      max-width: 1200px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .chat-header {
+      background: linear-gradient(135deg, #4b6cb7, #182848);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .chat-messages {
+      height: 400px;
+      overflow-y: auto;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    .message {
+      margin-bottom: 15px;
+      padding: 12px 18px;
+      border-radius: 18px;
+      max-width: 80%;
+      position: relative;
+      line-height: 1.5;
+    }
+    .user-message {
+      background-color: #e3f2fd;
+      color: #0d47a1;
+      margin-left: auto;
+      border-bottom-right-radius: 5px;
+    }
+    .bot-message {
+      background-color: #ffffff;
+      color: #333;
+      border: 1px solid #e0e0e0;
+      border-bottom-left-radius: 5px;
+    }
+    .chat-input {
+      padding: 20px;
+      background-color: #fff;
+      border-top: 1px solid #eaeaea;
+    }
+    .query-type-selector {
+      margin-bottom: 15px;
+    }
+    .file-input-container {
+      margin-bottom: 15px;
+    }
+    .typing-indicator {
+      display: none;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .typing-indicator span {
+      height: 10px;
+      width: 10px;
+      background-color: #333;
+      border-radius: 50%;
+      display: inline-block;
+      margin: 0 2px;
+      animation: bounce 1.2s infinite;
+    }
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+    }
+    .disclaimer {
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+      padding: 10px;
+      border-top: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="chat-container">
+      <div class="chat-header">
+        <h1>Problem Solver</h1>
+        <p>Ask any question or upload a document for analysis</p>
+      </div>
+      
+      <div class="row p-3">
+        <!-- Sidebar: Settings and Document Upload -->
+        <div class="col-md-4">
+          <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+              Settings
+            </div>
+            <div class="card-body">
+              <div class="query-type-selector mb-3">
+                <label class="form-label">Query Type:</label>
+                <select id="query-type" class="form-select">
+                  <option value="general">General</option>
+                  <option value="medical">Medical</option>
+                  <option value="legal">Legal</option>
+                </select>
+              </div>
+              
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="text-to-speech">
+                <label class="form-check-label" for="text-to-speech">
+                  Text-to-Speech
+                </label>
+              </div>
+              
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="enable-history">
+                <label class="form-check-label" for="enable-history">
+                  Save Chat History
+                </label>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Theme:</label>
+                <select id="theme-selector" class="form-select">
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                </select>
+              </div>
+              
+              <button id="clear-chat" class="btn btn-danger w-100">Clear Chat</button>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header bg-info text-white">
+              Document Upload
+            </div>
+            <div class="card-body">
+              <div class="file-input-container">
+                <label for="document-upload" class="form-label">Upload PDF or Image:</label>
+                <input type="file" id="document-upload" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+              </div>
+              <div id="upload-preview" class="mt-2 d-none">
+                <p class="text-success">Document ready for analysis</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Chat Area -->
+        <div class="col-md-8">
+          <div class="chat-messages" id="chat-messages">
+            <div class="message bot-message">
+              Hello! I'm your Problem Solver. Ask me a question or upload a document for analysis.
+            </div>
+          </div>
+          
+          <div class="typing-indicator" id="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          
+          <div class="chat-input">
+            <form id="chat-form">
+              <div class="input-group">
+                <input type="text" id="user-input" class="form-control" placeholder="Type your question here...">
+                <button type="submit" class="btn btn-primary">Send</button>
+              </div>
+            </form>
+          </div>
+          
+          <div class="disclaimer">
+            Disclaimer: This assistant provides information for educational purposes only.
+            For medical or legal matters, please consult with professionals.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatForm = document.getElementById('chat-form');
+      const userInput = document.getElementById('user-input');
+      const chatMessages = document.getElementById('chat-messages');
+      const queryType = document.getElementById('query-type');
+      const documentUpload = document.getElementById('document-upload');
+      const uploadPreview = document.getElementById('upload-preview');
+      const typingIndicator = document.getElementById('typing-indicator');
+      const textToSpeech = document.getElementById('text-to-speech');
+      const enableHistory = document.getElementById('enable-history');
+      const themeSelector = document.getElementById('theme-selector');
+      const clearChatButton = document.getElementById('clear-chat');
+      
+      // Load saved chat history if enabled
+      if (localStorage.getItem('enableHistory') === 'true') {
+        enableHistory.checked = true;
+        const savedMessages = localStorage.getItem('chatHistory');
+        if (savedMessages) {
+          chatMessages.innerHTML = savedMessages;
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+      }
+      
+      // Theme selector
+      themeSelector.addEventListener('change', function() {
+        if (this.value === 'dark') {
+          document.body.classList.add('dark-mode');
+        } else {
+          document.body.classList.remove('dark-mode');
+        }
+      });
+      
+      // Document upload preview
+      documentUpload.addEventListener('change', function() {
+        if (this.files.length > 0) {
+          uploadPreview.classList.remove('d-none');
+          uploadPreview.innerHTML = `<p class="text-success">Document ready: ${this.files[0].name}</p>`;
+        } else {
+          uploadPreview.classList.add('d-none');
+        }
+      });
+      
+      // Clear chat
+      clearChatButton.addEventListener('click', function() {
+        chatMessages.innerHTML = `
+          <div class="message bot-message">
+            Hello! I'm your Problem Solver. Ask me a question or upload a document for analysis.
+          </div>`;
+        localStorage.removeItem('chatHistory');
+      });
+      
+      // Function to add a new message
+      function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+        messageDiv.innerText = text;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        if (enableHistory.checked) {
+          localStorage.setItem('enableHistory', 'true');
+          localStorage.setItem('chatHistory', chatMessages.innerHTML);
+        }
+      }
+      
+      // Submit chat form
+      chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const userMsg = userInput.value.trim();
+        if (!userMsg) return;
+        addMessage(userMsg, 'user');
+        userInput.value = '';
+        typingIndicator.style.display = 'block';
+        
+        // Build form data to send to solution provider endpoint
+        const formData = new FormData();
+        formData.append('query', userMsg);
+        formData.append('type', queryType.value);
+        if (documentUpload.files.length > 0) {
+          formData.append('document', documentUpload.files[0]);
+        }
+        
+        // Send request to /solutionprovider/ask
+        fetch('/solutionprovider/ask', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server responded with status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          typingIndicator.style.display = 'none';
+          if (data.error) {
+            addMessage(`Error: ${data.error}`, 'bot');
+          } else {
+            addMessage(data.response, 'bot');
+            if (textToSpeech.checked && 'speechSynthesis' in window) {
+              const utterance = new SpeechSynthesisUtterance(data.response);
+              window.speechSynthesis.speak(utterance);
+            }
+          }
+          documentUpload.value = '';
+          uploadPreview.classList.add('d-none');
+        })
+        .catch(error => {
+          typingIndicator.style.display = 'none';
+          addMessage(`Error: Could not connect to the server. ${error.message}`, 'bot');
+          console.error('Fetch error:', error);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

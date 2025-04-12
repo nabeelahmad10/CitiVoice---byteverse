@@ -1,0 +1,38 @@
+# 1. Virtual Environments
+env/
+venv/
+
+# 2. Python Bytecode and Cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# 3. Temporary/Editor Files
+tempCodeRunnerFile.py
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# 4. Logs and Databases
+*.log
+*.sqlite3
+
+# 5. Distribution / Packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# 6. Operating System Files
+.DS_Store
+Thumbs.db
+
+# 7. Coverage / Testing
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/

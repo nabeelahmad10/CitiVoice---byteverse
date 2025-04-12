@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Government Services - 24/7 AI Citizen Helpline</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Custom styles -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body { 
+      font-family: 'Inter', sans-serif; 
+    }
+    .chat-container { 
+      height: 600px; 
+      display: flex; 
+      flex-direction: column; 
+    }
+    .chat-messages { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 1rem; 
+    }
+    .message { 
+      margin-bottom: 1rem; 
+      display: flex; 
+      align-items: flex-start; 
+    }
+    .message.user { 
+      justify-content: flex-end; 
+    }
+    .message-content { 
+      max-width: 80%; 
+      padding: 0.75rem; 
+      border-radius: 0.5rem; 
+    }
+    .message.bot .message-content { 
+      background-color: #f1f5f9; 
+      color: #1e293b; 
+    }
+    .message.user .message-content { 
+      background-color: #3b82f6; 
+      color: white; 
+    }
+    .avatar { 
+      width: 2rem; 
+      height: 2rem; 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin-right: 0.5rem; 
+    }
+    .user .avatar { 
+      margin-right: 0; 
+      margin-left: 0.5rem; 
+      background-color: #3b82f6; 
+      color: white; 
+    }
+    .bot .avatar { 
+      background-color: #dbeafe; 
+      color: #3b82f6; 
+    }
+    /* Thinking (Typing) Indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 8px 0;
+    }
+    .typing-dot {
+      width: 10px;
+      height: 10px;
+      background-color: #3b82f6;
+      border-radius: 50%;
+      animation: bounce 0.8s infinite;
+    }
+    .typing-dot:nth-child(2) { 
+      animation-delay: 0.2s; 
+    }
+    .typing-dot:nth-child(3) { 
+      animation-delay: 0.4s; 
+    }
+    @keyframes bounce {
+      0%, 80%, 100% { 
+        transform: scale(0.8); 
+        opacity: 0.6; 
+      }
+      40% { 
+        transform: scale(1.2); 
+        opacity: 1; 
+      }
+    }
+    .tab-content { 
+      display: none; 
+    }
+    .tab-content.active { 
+      display: block; 
+    }
+    .tab { 
+      cursor: pointer; 
+      padding: 0.75rem 1rem; 
+      text-align: center; 
+      border-bottom: 2px solid transparent; 
+      transition: all 0.3s ease; 
+    }
+    .tab.active { 
+      border-bottom-color: #3b82f6; 
+      color: #3b82f6; 
+      font-weight: 500; 
+    }
+    .recording-indicator { 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      gap: 0.25rem; 
+      margin-top: 0.5rem; 
+    }
+    .recording-bar { 
+      width: 0.25rem; 
+      background-color: #f87171; 
+      border-radius: 1rem; 
+      animation: pulse 1s infinite; 
+    }
+    @keyframes pulse { 
+      0%, 100% { 
+        opacity: 1; 
+        transform: scaleY(1); 
+      } 
+      50% { 
+        opacity: 0.6; 
+        transform: scaleY(0.6); 
+      } 
+    }
+  </style>
+</head>
+<body class="bg-slate-50">
+  <!-- Header -->
+  <div class="bg-blue-600 text-white py-8">
+    <div class="container mx-auto px-4">
+      <a href="../index.html" class="inline-flex items-center text-white/80 hover:text-white mb-6">
+        <i class="fas fa-arrow-left mr-2"></i> Back to Home
+      </a>
+      <h1 class="text-3xl md:text-4xl font-bold mb-4">Government & Bureaucratic Assistance</h1>
+      <p class="text-xl text-white/80 max-w-2xl">
+        Navigate complex government processes with ease using our AI assistant.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Main content -->
+  <div class="container mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left sidebar -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="p-6 border-b border-slate-200">
+            <h2 class="text-xl font-bold text-slate-900">Services</h2>
+            <p class="text-sm text-slate-500">Browse available government services</p>
+          </div>
+          <div class="p-6">
+            <div class="relative mb-6">
+              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input 
+                type="text" 
+                placeholder="Search services..." 
+                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+            </div>
+            <div class="space-y-1">
+              <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 flex items-center text-slate-700">
+                <i class="fas fa-file-alt mr-2 text-sm"></i> Document Applications
+              </button>
+              <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 flex items-center text-slate-700">
+                <i class="fas fa-upload mr-2 text-sm"></i> File Complaints
+              </button>
+              <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 flex items-center text-slate-700">
+                <i class="fas fa-clock mr-2 text-sm"></i> Track Applications
+              </button>
+              <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 flex items-center text-slate-700">
+                <i class="fas fa-search mr-2 text-sm"></i> Find Government Offices
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mt-6">
+          <div class="p-6 border-b border-slate-200">
+            <h2 class="text-xl font-bold text-slate-900">Popular Documents</h2>
+            <p class="text-sm text-slate-500">Frequently requested documents</p>
+          </div>
+          <div class="p-6">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-700">Passport Application</span>
+                <button class="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100">View</button>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-700">Voter ID Registration</span>
+                <button class="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100">View</button>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-700">Driving License Renewal</span>
+                <button class="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100">View</button>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-700">Property Registration</span>
+                <button class="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100">View</button>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-700">Birth Certificate</span>
+                <button class="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100">View</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main content area -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+          <!-- Tabs -->
+          <div class="grid grid-cols-3 border-b border-slate-200">
+            <div class="tab active" data-tab="chat">AI Assistant</div>
+            <div class="tab" data-tab="forms">Forms & Documents</div>
+            <div class="tab" data-tab="status">Application Status</div>
+          </div>
+          
+          <!-- Chat Tab -->
+          <div class="tab-content active" id="chat-tab">
+            <div class="chat-container bg-white rounded-lg overflow-hidden">
+              <!-- Chat header -->
+              <div class="bg-blue-600 text-white p-4">
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
+                    <i class="fas fa-robot text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold">Government Services Assistant</h3>
+                    <p class="text-sm text-blue-100">Online • 24/7 Support</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Chat messages -->
+              <div class="chat-messages" id="chat-messages">
+                <!-- Initial bot greeting -->
+                <div class="message bot">
+                  <div class="avatar">
+                    <i class="fas fa-robot"></i>
+                  </div>
+                  <div class="message-content">
+                    <p>Hello! I'm your Government Services Assistant. How can I help you today?</p>
+                    <p class="text-xs mt-1 opacity-70">10:30 AM</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Thinking (Typing) Indicator (hidden by default) -->
+              <div id="typing-indicator" class="typing-indicator hidden">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+              
+              <!-- Quick replies -->
+              <div class="p-2 border-t border-slate-200">
+                <div class="flex gap-2 overflow-x-auto pb-2">
+                  <button class="quick-reply px-3 py-1 text-sm border border-slate-300 rounded-md whitespace-nowrap hover:bg-slate-100">Passport Application</button>
+                  <button class="quick-reply px-3 py-1 text-sm border border-slate-300 rounded-md whitespace-nowrap hover:bg-slate-100">Voter ID</button>
+                  <button class="quick-reply px-3 py-1 text-sm border border-slate-300 rounded-md whitespace-nowrap hover:bg-slate-100">Driving License</button>
+                  <button class="quick-reply px-3 py-1 text-sm border border-slate-300 rounded-md whitespace-nowrap hover:bg-slate-100">Property Registration</button>
+                  <button class="quick-reply px-3 py-1 text-sm border border-slate-300 rounded-md whitespace-nowrap hover:bg-slate-100">Birth Certificate</button>
+                </div>
+              </div>
+              
+              <!-- Chat input -->
+              <div class="p-4 border-t border-slate-200">
+                <div class="flex items-center gap-2">
+                  <button id="mic-button" class="w-10 h-10 flex items-center justify-center rounded-full border border-slate-300 hover:bg-slate-100">
+                    <i class="fas fa-microphone"></i>
+                  </button>
+                  <input id="chat-input" type="text" placeholder="Type your message..." class="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <button id="send-button" class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700">
+                    <i class="fas fa-paper-plane"></i>
+                  </button>
+                </div>
+                <!-- Recording indicator -->
+                <div id="recording-indicator" class="recording-indicator hidden">
+                  <p class="text-sm text-red-600">Listening...</p>
+                  <div class="flex items-center gap-1 mt-1">
+                    <div class="recording-bar h-4"></div>
+                    <div class="recording-bar h-6"></div>
+                    <div class="recording-bar h-3"></div>
+                    <div class="recording-bar h-5"></div>
+                    <div class="recording-bar h-2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Other tabs (Forms & Documents, Application Status) remain unchanged -->
+          
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-white py-8 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p>&copy; 2025 AI Citizen Helpline. All rights reserved.</p>
+      <div class="flex justify-center space-x-4 mt-4">
+        <a href="#" class="text-slate-400 hover:text-white transition-colors">Privacy Policy</a>
+        <a href="#" class="text-slate-400 hover:text-white transition-colors">Terms of Service</a>
+        <a href="#" class="text-slate-400 hover:text-white transition-colors">Contact Us</a>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Socket.IO and custom script -->
+  <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize socket connection for the '/government' namespace
+      const socket = io('/government');
+      
+      const chatMessages = document.getElementById('chat-messages');
+      const chatInput = document.getElementById('chat-input');
+      const sendButton = document.getElementById('send-button');
+      const micButton = document.getElementById('mic-button');
+      const recordingIndicator = document.getElementById('recording-indicator');
+      const quickReplies = document.querySelectorAll('.quick-reply');
+      const typingIndicator = document.getElementById('typing-indicator');
+
+      // Function to add a message (user or bot)
+      function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', sender === 'bot' ? 'bot' : 'user');
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (sender === 'bot') {
+          messageDiv.innerHTML = `
+            <div class="avatar"><i class="fas fa-robot"></i></div>
+            <div class="message-content">
+              <p>${text}</p>
+              <p class="text-xs mt-1 opacity-70">${timeString}</p>
+            </div>
+          `;
+        } else {
+          messageDiv.innerHTML = `
+            <div class="message-content">
+              <p>${text}</p>
+              <p class="text-xs mt-1 opacity-70">${timeString}</p>
+            </div>
+            <div class="avatar"><i class="fas fa-user"></i></div>
+          `;
+        }
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      // Send text message & show thinking indicator
+      function sendMessage() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+        addMessage(text, 'user');
+        chatInput.value = '';
+        typingIndicator.classList.remove('hidden');
+        socket.emit('send_message', { message: text });
+      }
+
+      sendButton.addEventListener('click', sendMessage);
+      chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+      // Mic button: when clicked, show recording indicator only
+      micButton.addEventListener('click', () => {
+        micButton.disabled = true;
+        recordingIndicator.classList.remove('hidden');
+        socket.emit('start_voice_input');
+      });
+
+      // When TTS converts voice input:
+      // 1. Add the user message
+      // 2. Hide recording indicator
+      // 3. Show thinking indicator
+      // 4. Emit message for processing
+      socket.on('user_message', (data) => {
+        addMessage(data.text, 'user');
+        chatInput.value = data.text;
+        recordingIndicator.classList.add('hidden');
+        typingIndicator.classList.remove('hidden');
+        socket.emit('send_message', { message: data.text });
+        micButton.disabled = false;
+      });
+
+      // Handle streaming bot responses
+      socket.on('response_stream', (data) => {
+        if (data.is_final) {
+          typingIndicator.classList.add('hidden');
+          addMessage(data.text, 'bot');
+        } else {
+          // Optionally, update streaming response (if implemented)
+          console.log('Streaming response:', data.text);
+        }
+      });
+
+      // TTS audio playback
+      socket.on('tts_audio', (data) => {
+        const audio = new Audio('data:audio/mp3;base64,' + data.audio);
+        audio.play();
+      });
+
+      // Error handling and UI reset
+      socket.on('error_message', (data) => {
+        addMessage("Error: " + data.message, 'bot');
+        recordingIndicator.classList.add('hidden');
+        micButton.disabled = false;
+      });
+      
+      socket.on('stop_audio', () => {
+        recordingIndicator.classList.add('hidden');
+        micButton.disabled = false;
+      });
+
+      quickReplies.forEach(button => {
+        button.addEventListener('click', () => {
+          chatInput.value = button.innerText;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

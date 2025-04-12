@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Medical & Health Support - 24/7 AI Citizen Helpline</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom styles -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .chat-container { height: 600px; display: flex; flex-direction: column; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 1rem; }
+    .message { margin-bottom: 1rem; display: flex; align-items: flex-start; }
+    .message.user { justify-content: flex-end; }
+    .message-content { max-width: 80%; padding: 0.75rem; border-radius: 0.5rem; }
+    .message.bot .message-content { background-color: #f1f5f9; color: #1e293b; }
+    .message.user .message-content { background-color: #10b981; color: white; }
+    .avatar {
+      width: 2rem; height: 2rem; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; margin-right: 0.5rem;
+    }
+    .user .avatar { margin-right: 0; margin-left: 0.5rem; background-color: #10b981; color: white; }
+    .bot .avatar { background-color: #d1fae5; color: #10b981; }
+    /* Thinking (Typing) Indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 8px 0;
+    }
+    .typing-dot {
+      width: 10px;
+      height: 10px;
+      background-color: #10b981;
+      border-radius: 50%;
+      animation: bounce 0.8s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.6; }
+      40% { transform: scale(1.2); opacity: 1; }
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .tab {
+      cursor: pointer; padding: 0.75rem 1rem; text-align: center;
+      border-bottom: 2px solid transparent; transition: all 0.3s ease;
+    }
+    .tab.active { border-bottom-color: #10b981; color: #10b981; font-weight: 500; }
+    /* Recording indicator animation */
+    .recording-indicator {
+      display: flex; justify-content: center; align-items: center; gap: 0.25rem;
+      margin-top: 0.5rem;
+    }
+    .recording-bar {
+      width: 0.25rem; background-color: #f87171; border-radius: 1rem;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scaleY(1); }
+      50% { opacity: 0.6; transform: scaleY(0.6); }
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body class="bg-slate-50">
+  <!-- Header -->
+  <div class="bg-emerald-600 text-white py-8">
+    <div class="container mx-auto px-4">
+      <h1 class="text-3xl md:text-4xl font-bold mb-4">Medical & Health Support</h1>
+      <p class="text-xl text-white/80 max-w-2xl">
+        Access health information and emergency guidance whenever you need it.
+      </p>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="container mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left sidebar -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="p-6 border-b border-slate-200">
+            <h2 class="text-xl font-bold text-slate-900">Health Services</h2>
+            <p class="text-sm text-slate-500">Browse available medical assistance</p>
+          </div>
+          <div class="p-6">
+            <div class="relative mb-6">
+              <i class="fas fa-stethoscope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input
+                type="text"
+                placeholder="Search health topics..."
+                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+            </div>
+            <div class="space-y-1">
+              <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 flex items-center text-slate-700">
+                <i class="fas fa-heartbeat mr-2 text-sm"></i> General Health
+              </button>
+              <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 flex items-center text-slate-700">
+                <i class="fas fa-brain mr-2 text-sm"></i> Mental Health
+              </button>
+              <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 flex items-center text-slate-700">
+                <i class="fas fa-calendar-alt mr-2 text-sm"></i> Appointments
+              </button>
+              <button class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 flex items-center text-slate-700">
+                <i class="fas fa-user-md mr-2 text-sm"></i> Find Doctors
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mt-6">
+          <div class="p-6 border-b border-slate-200">
+            <h2 class="text-xl font-bold text-slate-900">Health Resources</h2>
+            <p class="text-sm text-slate-500">Helpful medical information</p>
+          </div>
+          <div class="p-6">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-700">First Aid Guide</span>
+                <button class="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100">View</button>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-700">COVID-19 Information</span>
+                <button class="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100">View</button>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-700">Mental Health Resources</span>
+                <button class="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100">View</button>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-700">Vaccination Schedule</span>
+                <button class="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100">View</button>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-700">Medication Reminders</span>
+                <button class="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100">View</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main content area -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+          <!-- Tabs -->
+          <div class="grid grid-cols-3 border-b border-slate-200">
+            <div class="tab active" data-tab="chat">AI Health Assistant</div>
+            <div class="tab" data-tab="appointments">Book Appointments</div>
+            <div class="tab" data-tab="resources">Health Resources</div>
+          </div>
+          
+          <!-- Chat Tab -->
+          <div class="tab-content active" id="chat-tab">
+            <div class="chat-container bg-white rounded-lg overflow-hidden">
+              <!-- Chat header -->
+              <div class="bg-emerald-600 text-white p-4">
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
+                    <i class="fas fa-stethoscope text-xl"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold">Health Assistant</h3>
+                    <p class="text-sm text-emerald-100">Online • 24/7 Support</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Chat messages -->
+              <div class="chat-messages" id="chat-messages">
+                <!-- Initial bot greeting -->
+                <div class="message bot">
+                  <div class="avatar">
+                    <i class="fas fa-stethoscope"></i>
+                  </div>
+                  <div class="message-content">
+                    <p>Hello! I'm your Health Assistant. I can provide general health information and guidance. Note that I'm not a substitute for professional medical advice. How can I help you today?</p>
+                    <p class="text-xs mt-1 opacity-70">10:30 AM</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Thinking (Typing) Indicator -->
+              <div id="typing-indicator" class="typing-indicator hidden">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+              
+              <!-- Quick replies -->
+              <div class="p-2 border-t border-slate-200">
+                <div class="flex gap-2 overflow-x-auto pb-2">
+                  <button class="quick-reply px-3 py-1 text-sm border border-slate-300 rounded-md whitespace-nowrap hover:bg-slate-100">Headache</button>
+                  <button class="quick-reply px-3 py-1 text-sm border border-slate-300 rounded-md whitespace-nowrap hover:bg-slate-100">Fever</button>
+                  <button class="quick-reply px-3 py-1 text-sm border border-slate-300 rounded-md whitespace-nowrap hover:bg-slate-100">Anxiety</button>
+                  <button class="quick-reply px-3 py-1 text-sm border border-slate-300 rounded-md whitespace-nowrap hover:bg-slate-100">Heart Health</button>
+                  <button class="quick-reply px-3 py-1 text-sm border border-slate-300 rounded-md whitespace-nowrap hover:bg-slate-100">First Aid</button>
+                </div>
+              </div>
+              
+              <!-- Chat input -->
+              <div class="p-4 border-t border-slate-200">
+                <div class="flex items-center gap-2">
+                  <button id="mic-button" class="w-10 h-10 flex items-center justify-center rounded-full border border-slate-300 hover:bg-slate-100">
+                    <i class="fas fa-microphone"></i>
+                  </button>
+                  <input id="chat-input" type="text" placeholder="Type your message..." class="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                  <button id="send-button" class="w-10 h-10 flex items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-700">
+                    <i class="fas fa-paper-plane"></i>
+                  </button>
+                </div>
+                <!-- Recording indicator -->
+                <div id="recording-indicator" class="recording-indicator hidden">
+                  <p class="text-sm text-red-600">Listening...</p>
+                  <div class="flex items-center gap-1">
+                    <div class="recording-bar h-4"></div>
+                    <div class="recording-bar h-6"></div>
+                    <div class="recording-bar h-3"></div>
+                    <div class="recording-bar h-5"></div>
+                    <div class="recording-bar h-2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Appointments Tab (Demo Placeholder) -->
+          <div class="tab-content" id="appointments-tab">
+            <div class="p-6">
+              <h2 class="text-xl font-bold text-slate-900 mb-2">Book Appointments</h2>
+              <p class="text-slate-600 mb-6">[Demo Placeholder]</p>
+            </div>
+          </div>
+          
+          <!-- Resources Tab (Demo Placeholder) -->
+          <div class="tab-content" id="resources-tab">
+            <div class="p-6">
+              <h2 class="text-xl font-bold text-slate-900 mb-2">Health Resources</h2>
+              <p class="text-slate-600 mb-6">[Demo Placeholder]</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-white py-8 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p>&copy; 2025 AI Citizen Helpline. All rights reserved.</p>
+      <div class="flex justify-center space-x-4 mt-4">
+        <a href="#" class="text-slate-400 hover:text-white transition-colors">Privacy Policy</a>
+        <a href="#" class="text-slate-400 hover:text-white transition-colors">Terms of Service</a>
+        <a href="#" class="text-slate-400 hover:text-white transition-colors">Contact Us</a>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Socket.IO and custom script -->
+  <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+  <script>
+    // Initialize socket connection for the '/medical' namespace
+    const socket = io('/medical');
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Tab switching logic
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabId = tab.getAttribute('data-tab');
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+      });
+
+      // Chat elements
+      const chatMessages = document.getElementById('chat-messages');
+      const chatInput = document.getElementById('chat-input');
+      const sendButton = document.getElementById('send-button');
+      const micButton = document.getElementById('mic-button');
+      const recordingIndicator = document.getElementById('recording-indicator');
+      const quickReplies = document.querySelectorAll('.quick-reply');
+      const typingIndicator = document.getElementById('typing-indicator');
+
+      // Function to append a message (user or bot)
+      function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', sender === 'user' ? 'user' : 'bot');
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (sender === 'bot') {
+          messageDiv.innerHTML = `
+            <div class="avatar"><i class="fas fa-stethoscope"></i></div>
+            <div class="message-content">
+              <p>${text}</p>
+              <p class="text-xs mt-1 opacity-70">${timeString}</p>
+            </div>
+          `;
+        } else {
+          messageDiv.innerHTML = `
+            <div class="message-content">
+              <p>${text}</p>
+              <p class="text-xs mt-1 opacity-70">${timeString}</p>
+            </div>
+            <div class="avatar"><i class="fas fa-user"></i></div>
+          `;
+        }
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      // Send text message and show thinking indicator
+      function sendMessage() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+        addMessage(text, 'user');
+        chatInput.value = '';
+        // Show thinking indicator immediately after sending text
+        typingIndicator.classList.remove('hidden');
+        socket.emit('send_message', { message: text });
+      }
+      sendButton.addEventListener('click', sendMessage);
+      chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+      // Mic button event with animation (shows recording indicator only)
+      micButton.addEventListener('click', () => {
+        micButton.disabled = true;
+        micButton.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+        recordingIndicator.classList.remove('hidden');
+        socket.emit('start_voice_input');
+      });
+
+      // Listen for recognized voice input – once received, add user message,
+      // show thinking indicator, and emit the message for processing.
+      socket.on('user_message', function(data) {
+        addMessage(data.text, 'user');
+        chatInput.value = data.text;
+        recordingIndicator.classList.add('hidden');
+        // Show chatbot thinking animation (typing indicator)
+        typingIndicator.classList.remove('hidden');
+        // Emit the message to process via send_message event
+        socket.emit('send_message', { message: data.text });
+        micButton.disabled = false;
+        micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+      });
+
+      // Listen for streaming chatbot responses
+      socket.on('response_stream', function(data) {
+        if (data.is_final) {
+          typingIndicator.classList.add('hidden');
+        }
+        let botMsg = document.querySelector('.message.bot.latest');
+        if (!botMsg) {
+          botMsg = document.createElement('div');
+          botMsg.classList.add('message', 'bot', 'latest');
+          botMsg.innerHTML = `
+            <div class="avatar"><i class="fas fa-stethoscope"></i></div>
+            <div class="message-content"><p></p></div>
+          `;
+          chatMessages.appendChild(botMsg);
+        }
+        botMsg.querySelector('.message-content p').innerHTML = data.text;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        if (data.is_final) botMsg.classList.remove('latest');
+      });
+
+      // Listen for error messages
+      socket.on('error_message', function(data) {
+        addMessage("Error: " + data.message, 'bot');
+        recordingIndicator.classList.add('hidden');
+        micButton.disabled = false;
+        micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+      });
+
+      // Listen for TTS audio event
+      socket.on('tts_audio', function(data) {
+        const audio = new Audio('data:audio/mp3;base64,' + data.audio);
+        audio.play();
+      });
+
+      // Listen for stop_audio event to reset UI
+      socket.on('stop_audio', function() {
+        recordingIndicator.classList.add('hidden');
+        micButton.disabled = false;
+        micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+      });
+
+      // Quick replies to prefill chat input
+      quickReplies.forEach(button => {
+        button.addEventListener('click', () => { chatInput.value = button.innerText; });
+      });
+    });
+  </script>
+</body>
+</html>

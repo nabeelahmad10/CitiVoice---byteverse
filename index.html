@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CitiVoice: AI Citizen Helpline</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom styles -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6);
+      --glow-effect: 0 0 15px rgba(99, 102, 241, 0.6);
+    }
+    
+    body {
+      font-family: 'Outfit', sans-serif;
+      overflow-x: hidden;
+      background-color: #0f172a;
+      color: #f8fafc;
+    }
+    
+    .font-inter {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .animate-float {
+      animation: float 10s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    .animate-pulse-slow {
+      animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .bg-gradient-hero {
+      background: linear-gradient(to bottom, #0f172a, #020617, #0f172a);
+      position: relative;
+    }
+    
+    .bg-gradient-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15), transparent 70%);
+      pointer-events: none;
+    }
+    
+    .bg-blur-circle {
+      position: absolute;
+      border-radius: 100%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+      filter: blur(40px);
+    }
+    
+    .chat-message {
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .chat-message.user {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: white;
+      border-radius: 1rem;
+      padding: 0.75rem;
+      margin-left: auto;
+      margin-right: 0.5rem;
+      max-width: 80%;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+    
+    .chat-message.bot {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      color: #f8fafc;
+      border-radius: 1rem;
+      padding: 0.75rem;
+      margin-right: auto;
+      margin-left: 0.5rem;
+      max-width: 80%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .typing-dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      background-color: #94a3b8;
+      border-radius: 50%;
+      animation: bounce 1.5s infinite;
+    }
+    
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+    
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    /* Scroll indicator animation */
+    .scroll-indicator {
+      animation: scroll-bounce 1.5s infinite;
+    }
+    
+    @keyframes scroll-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+    
+    /* Service card hover effect */
+    .service-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .service-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+      border-color: rgba(99, 102, 241, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .service-card .icon-container {
+      transition: all 0.4s ease;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(99, 102, 241, 0.2));
+    }
+    
+    .service-card:hover .icon-container {
+      background: var(--primary-gradient);
+      box-shadow: var(--glow-effect);
+      transform: scale(1.1);
+    }
+    
+    /* Glowing button effect */
+    .btn-glow {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+    
+    .btn-glow::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--primary-gradient);
+      z-index: -1;
+      transition: all 0.4s ease;
+    }
+    
+    .btn-glow:hover {
+      box-shadow: var(--glow-effect);
+      transform: translateY(-2px);
+    }
+    
+    .btn-glow:hover::before {
+      filter: brightness(1.2);
+    }
+    
+    /* Glassmorphism effect */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Animated gradient border */
+    .gradient-border {
+      position: relative;
+      border-radius: 1rem;
+      padding: 1px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
+      background-size: 300% 100%;
+      animation: gradient-shift 8s linear infinite;
+    }
+    
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+    
+    /* Animated background */
+    .animated-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+    }
+    
+    .animated-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(99, 102, 241, 0.15), transparent 70%);
+      opacity: 0.7;
+    }
+    
+    /* Futuristic grid */
+    .futuristic-grid {
+      background-image: 
+        linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    
+    /* Neon text effect */
+    .neon-text {
+      color: #fff;
+      text-shadow: 0 0 5px rgba(99, 102, 241, 0.7), 0 0 10px rgba(99, 102, 241, 0.5);
+    }
+    
+    /* Particle effect */
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    
+    /* Glitch effect */
+    .glitch {
+      position: relative;
+    }
+    
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.8;
+    }
+    
+    .glitch::before {
+      animation: glitch-effect 3s infinite;
+      color: #3b82f6;
+      clip: rect(44px, 450px, 56px, 0);
+      left: 1px;
+    }
+    
+    .glitch::after {
+      animation: glitch-effect 2s infinite;
+      color: #8b5cf6;
+      clip: rect(44px, 450px, 46px, 0);
+      left: -1px;
+    }
+    
+    @keyframes glitch-effect {
+      0% { clip: rect(44px, 450px, 56px, 0); }
+      5% { clip: rect(24px, 450px, 36px, 0); }
+      10% { clip: rect(54px, 450px, 66px, 0); }
+      15% { clip: rect(74px, 450px, 76px, 0); }
+      20% { clip: rect(24px, 450px, 26px, 0); }
+      25% { clip: rect(44px, 450px, 56px, 0); }
+      30% { clip: rect(34px, 450px, 36px, 0); }
+      100% { clip: rect(44px, 450px, 56px, 0); }
+    }
+    
+    /* Holographic card effect */
+    .holographic-card {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.5s ease;
+    }
+    
+    .holographic-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 45%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.1) 55%,
+        transparent 100%
+      );
+      transform: rotate(45deg);
+      transition: all 0.5s ease;
+      opacity: 0;
+    }
+    
+    .holographic-card:hover::before {
+      animation: holographic 1.5s infinite;
+      opacity: 1;
+    }
+    
+    @keyframes holographic {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    /* Cyberpunk button */
+    .cyberpunk-btn {
+      position: relative;
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #3b82f6;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .cyberpunk-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent);
+      transition: all 0.5s ease;
+    }
+    
+    .cyberpunk-btn:hover {
+      background: #1e293b;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+    }
+    
+    .cyberpunk-btn:hover::before {
+      left: 100%;
+    }
+    
+    /* Futuristic progress bar */
+    .progress-track {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      border-radius: 2px;
+      animation: progress-animation 2s ease-in-out infinite;
+    }
+    
+    @keyframes progress-animation {
+      0% { width: 0%; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+    
+    /* Futuristic scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+      border-radius: 3px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(to bottom, #60a5fa, #a78bfa);
+    }
+    
+    /* Animated underline */
+    .animated-underline {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .animated-underline::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      transition: width 0.3s ease;
+    }
+    
+    .animated-underline:hover::after {
+      width: 100%;
+    }
+    
+    /* Futuristic loader */
+    .futuristic-loader {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top-color: #3b82f6;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Hexagon grid background */
+    .hexagon-bg {
+      background-color: #0f172a;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill='%233b82f6' fill-opacity='0.05'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Fixed navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+              950: '#172554',
+            },
+          },
+          animation: {
+            'spin-slow': 'spin 3s linear infinite',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar py-4">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center mr-3">
+            <i class="fas fa-phone-alt text-white"></i>
+          </div>
+          <span class="text-xl font-bold text-white">CitiVoice</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="#features" class="text-white/80 hover:text-white transition-colors">Features</a>
+          <a href="#services" class="text-white/80 hover:text-white transition-colors">Services</a>
+          <a href="#how-it-works" class="text-white/80 hover:text-white transition-colors">How It Works</a>
+          <a href="#problem-solver" class="text-white/80 hover:text-white transition-colors">Problem Solver</a>
+          <button class="px-5 py-2 bg-white text-blue-600 rounded-full font-medium hover:bg-blue-50 transition-all">
+            Get Started
+          </button>
+        </div>
+        <button class="md:hidden text-white">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Particle background -->
+  <div id="particles-js" class="fixed inset-0 z-0 pointer-events-none"></div>
+  
+  <!-- Hero Section -->
+  <section class="relative min-h-screen flex items-center overflow-hidden bg-gradient-hero pt-20">
+    <!-- Animated background elements -->
+    <div class="absolute inset-0 overflow-hidden futuristic-grid" id="animated-bg">
+      <!-- Animated circles will be appended here by script -->
+    </div>
+    
+    <!-- Content -->
+    <div class="container mx-auto px-4 relative z-10" id="hero-content">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div id="hero-text">
+          <div class="mb-4 inline-block">
+            <span class="px-3 py-1 text-xs font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full">AI-POWERED</span>
+          </div>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight glitch" data-text="CitiVoice: AI Citizen Helpline">
+            <span class="neon-text">CitiVoice:</span> AI Citizen Helpline
+          </h1>
+          <p class="text-xl text-slate-300 mb-8 max-w-xl">
+            AI-powered voice and chat assistance for government services, legal advice, 
+            medical support, and emergency help — available anytime, anywhere.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <button class="px-6 py-3 btn-glow text-white font-medium rounded-lg transition-all group flex items-center">
+              Get Started 
+              <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+            </button>
+            <a href="#services" class="px-6 py-3 cyberpunk-btn rounded-lg transition-all flex items-center justify-center">
+              Explore Services
+              <i class="fas fa-chevron-down ml-2"></i>
+            </a>
+          </div>
+          <div class="flex items-center mt-8 text-slate-300">
+            <div class="flex items-center">
+              <div class="w-2 h-2 rounded-full bg-blue-500 mr-2 animate-pulse"></div>
+              <i class="fas fa-phone-alt mr-2"></i>
+              <span>Voice-enabled AI</span>
+            </div>
+            <span class="mx-3">•</span>
+            <div class="flex items-center">
+              <div class="w-2 h-2 rounded-full bg-purple-500 mr-2 animate-pulse"></div>
+              <i class="fas fa-comment-alt mr-2"></i>
+              <span>Multi-language support</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="relative" id="hero-chat">
+          <div class="gradient-border">
+            <div class="relative bg-[#0f172a] rounded-2xl p-6 backdrop-blur-sm">
+              <div class="absolute -top-3 -left-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs px-3 py-1 rounded-full shadow-lg">
+                <div class="flex items-center">
+                  <div class="w-2 h-2 rounded-full bg-white mr-2 animate-pulse"></div>
+                  AI Assistant
+                </div>
+              </div>
+              <div class="space-y-4">
+                <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+                  <p class="text-white">How can I help you today?</p>
+                </div>
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 rounded-lg ml-auto max-w-[80%] shadow-lg">
+                  <p class="text-white">I need help with my passport application.</p>
+                </div>
+                <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+                  <p class="text-white">I can guide you through the passport application process. Would you like information on required documents, application fees, or the application procedure?</p>
+                </div>
+                <div class="flex items-center gap-2 mt-4">
+                  <button class="px-3 py-1 bg-white/5 text-white border border-blue-500/30 hover:bg-white/10 rounded-md text-sm transition-all hover:border-blue-500 hover:shadow-[0_0_10px_rgba(59,130,246,0.5)]">
+                    Documents
+                  </button>
+                  <button class="px-3 py-1 bg-white/5 text-white border border-blue-500/30 hover:bg-white/10 rounded-md text-sm transition-all hover:border-blue-500 hover:shadow-[0_0_10px_rgba(59,130,246,0.5)]">
+                    Fees
+                  </button>
+                  <button class="px-3 py-1 bg-white/5 text-white border border-blue-500/30 hover:bg-white/10 rounded-md text-sm transition-all hover:border-blue-500 hover:shadow-[0_0_10px_rgba(59,130,246,0.5)]">
+                    Procedure
+                  </button>
+                </div>
+                <div class="flex items-center gap-2 pt-4 border-t border-white/10">
+                  <button class="w-10 h-10 flex items-center justify-center rounded-full text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-[0_0_15px_rgba(59,130,246,0.7)] transition-all">
+                    <i class="fas fa-microphone"></i>
+                  </button>
+                  <div class="flex-1 relative">
+                    <input 
+                      type="text" 
+                      placeholder="Type your message..." 
+                      class="w-full bg-white/5 border border-white/10 rounded-full px-4 py-2 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    >
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 flex space-x-2">
+                      <button class="text-white/50 hover:text-white transition-colors">
+                        <i class="fas fa-paperclip"></i>
+                      </button>
+                      <button class="text-white/50 hover:text-white transition-colors">
+                        <i class="fas fa-smile"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <button class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-[0_0_15px_rgba(59,130,246,0.7)] text-white rounded-full text-sm transition-all flex items-center">
+                    <i class="fas fa-paper-plane mr-1"></i> Send
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Decorative elements -->
+          <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-3xl"></div>
+          <div class="absolute -top-10 -left-10 w-40 h-40 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-full blur-3xl"></div>
+          
+          <!-- Floating elements -->
+          <div class="absolute -top-5 -right-5 w-20 h-20 animate-float" style="animation-delay: 0.5s;">
+            <div class="w-full h-full rounded-full border border-white/10 flex items-center justify-center">
+              <div class="w-3/4 h-3/4 rounded-full border border-white/20 flex items-center justify-center">
+                <div class="w-1/2 h-1/2 rounded-full bg-gradient-to-r from-blue-500/30 to-indigo-500/30 animate-pulse-slow"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="absolute -bottom-8 -left-8 w-16 h-16 animate-float" style="animation-delay: 1s;">
+            <div class="w-full h-full rounded-full border border-white/10 flex items-center justify-center">
+              <div class="w-3/4 h-3/4 rounded-full border border-white/20 flex items-center justify-center">
+                <div class="w-1/2 h-1/2 rounded-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 animate-pulse-slow"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-white/50">
+      <span class="text-sm mb-2">Scroll to explore</span>
+      <div class="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center scroll-indicator">
+        <div class="w-1.5 h-3 bg-white/50 rounded-full mt-2"></div>
+      </div>
+    </div>
+    
+    <!-- Floating tech elements -->
+    <div class="absolute top-20 left-10 animate-float opacity-30" style="animation-delay: 0.2s;">
+      <i class="fas fa-microchip text-3xl text-blue-500"></i>
+    </div>
+    <div class="absolute bottom-40 right-20 animate-float opacity-30" style="animation-delay: 0.7s;">
+      <i class="fas fa-brain text-3xl text-purple-500"></i>
+    </div>
+    <div class="absolute top-40 right-10 animate-float opacity-30" style="animation-delay: 1.2s;">
+      <i class="fas fa-network-wired text-3xl text-indigo-500"></i>
+    </div>
+  </section>
+  
+  <!-- Features Section -->
+  <section class="py-20 bg-[#0f172a] relative" id="features">
+    <div class="absolute inset-0 hexagon-bg opacity-50"></div>
+    <div class="container px-4 mx-auto relative z-10">
+      <div class="text-center mb-16">
+        <div class="inline-block mb-4">
+          <span class="px-3 py-1 text-xs font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full">FEATURES</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">
+          AI-Powered Assistance at Your Fingertips
+        </h2>
+        <p class="text-slate-300 max-w-2xl mx-auto">
+          Our CitiVoice: AI Citizen Helpline provides round-the-clock support through advanced 
+          voice and chat AI technology, making public services more accessible than ever.
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Feature Card 1 -->
+        <div class="service-card rounded-xl p-6 holographic-card">
+          <div class="mb-6 icon-container w-16 h-16 rounded-full flex items-center justify-center">
+            <i class="fas fa-phone-alt text-2xl text-white"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">AI Voice Assistant</h3>
+          <p class="text-slate-300">Speak naturally to our AI which responds using advanced Natural Language Processing.</p>
+        </div>
+        
+        <!-- Feature Card 2 -->
+        <div class="service-card rounded-xl p-6 holographic-card">
+          <div class="mb-6 icon-container w-16 h-16 rounded-full flex items-center justify-center">
+            <i class="fas fa-shield-alt text-2xl text-white"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Grievance Reporting</h3>
+          <p class="text-slate-300">File complaints and track their progress with real-time updates.</p>
+        </div>
+        
+        <!-- Feature Card 3 -->
+        <div class="service-card rounded-xl p-6 holographic-card">
+          <div class="mb-6 icon-container w-16 h-16 rounded-full flex items-center justify-center">
+            <i class="fas fa-language text-2xl text-white"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Multi-Language</h3>
+          <p class="text-slate-300">Support for regional languages and dialects for maximum accessibility.</p>
+        </div>
+        
+        <!-- Feature Card 4 -->
+        <div class="service-card rounded-xl p-6 holographic-card">
+          <div class="mb-6 icon-container w-16 h-16 rounded-full flex items-center justify-center">
+            <i class="fas fa-exclamation-triangle text-2xl text-white"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Emergency Response</h3>
+          <p class="text-slate-300">Voice-based emergency reporting with automatic escalation for critical cases.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Problem Solver Section -->
+  <section class="py-20 bg-[#0f172a] relative" id="problem-solver">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a] to-[#020617]"></div>
+    <div class="container mx-auto px-4 relative z-10">
+      <div class="text-center mb-16">
+        <div class="inline-block mb-4">
+          <span class="px-3 py-1 text-xs font-semibold bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full">PROBLEM SOLVER</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">
+          Solve Your Challenges
+        </h2>
+        <p class="text-slate-300 max-w-2xl mx-auto">
+          Whether it's a complex document or an intricate query, our Problem Solver provides clear and concise solutions using advanced AI technology.
+        </p>
+      </div>
+      <div class="flex justify-center">
+        <a href="http://127.0.0.1:5005/CitiVoice/services/solutionprovider.html" class="px-6 py-3 btn-glow text-white font-medium rounded-lg transition-all flex items-center">
+          Try Problem Solver 
+          <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Service Sections -->
+  <section class="py-20 bg-[#0f172a] relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a] to-[#020617]"></div>
+    <div class="container mx-auto px-4 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="order-last lg:order-first">
+          <div class="inline-block mb-4">
+            <span class="px-3 py-1 text-xs font-semibold bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full">MEDICAL</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Medical & Health Support</h2>
+          <p class="text-slate-300 mb-6">Access health information and emergency guidance whenever you need it.</p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start">
+              <span class="text-emerald-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">General health-related queries (symptoms, first-aid guidance)</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-emerald-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Mental health assistance (AI-driven conversational therapy)</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-emerald-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Appointment booking for hospitals and clinics</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-emerald-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Medication reminders and information</span>
+            </li>
+          </ul>
+          <a href="services/medical.html" class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:shadow-[0_0_15px_rgba(16,185,129,0.7)] text-white font-medium rounded-lg inline-block transition-all">
+            Try Medical Assistant
+          </a>
+        </div>
+        <div class="order-first lg:order-last">
+          <div class="gradient-border">
+            <div class="relative rounded-xl overflow-hidden">
+              <img 
+                src="https://placehold.co/600x400/1e293b/10b981?text=Medical+Services" 
+                alt="Medical Services"
+                class="w-full h-auto"
+              >
+              <div class="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-6">
+                <div class="glass-card p-4 rounded-lg">
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <span class="text-sm font-medium text-white">AI Assistant</span>
+                  </div>
+                  <p class="text-slate-300 text-sm">
+                    "How can I assist you with health concerns today?"
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="py-20 bg-[#0f172a] relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a] to-[#020617]"></div>
+    <div class="container mx-auto px-4 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <div class="gradient-border">
+            <div class="relative rounded-xl overflow-hidden">
+              <img 
+                src="https://placehold.co/600x400/1e293b/6366f1?text=Legal+Services" 
+                alt="Legal Services"
+                class="w-full h-auto"
+              >
+              <div class="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-6">
+                <div class="glass-card p-4 rounded-lg">
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="w-3 h-3 rounded-full bg-indigo-500 animate-pulse"></div>
+                    <span class="text-sm font-medium text-white">AI Assistant</span>
+                  </div>
+                  <p class="text-slate-300 text-sm">
+                    "How can I assist you with legal advice today?"
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="inline-block mb-4">
+            <span class="px-3 py-1 text-xs font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full">LEGAL</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Legal Assistance</h2>
+          <p class="text-slate-300 mb-6">Get instant legal guidance and connect with professional services when needed.</p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start">
+              <span class="text-indigo-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Basic legal advice on consumer rights, family law, and contracts</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">AI-powered document guidance (affidavit templates, legal forms)</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Connecting users with legal aid services</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-indigo-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Legal document preparation assistance</span>
+            </li>
+          </ul>
+          <a href="services/legal.html" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-[0_0_15px_rgba(99,102,241,0.7)] text-white font-medium rounded-lg inline-block transition-all">
+            Try Legal Assistant
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="services" class="py-20 bg-[#0f172a] relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a] to-[#020617]"></div>
+    <div class="container mx-auto px-4 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="order-last lg:order-first">
+          <div class="inline-block mb-4">
+            <span class="px-3 py-1 text-xs font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full">GOVERNMENT</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Government & Grievance Assistance</h2>
+          <p class="text-slate-300 mb-6">Navigate complex government processes with ease using our AI assistant.</p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start">
+              <span class="text-blue-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Filing complaints about public services</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-blue-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Guidance on passport, voter ID, or license application</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-blue-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Status tracking of government documents</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-blue-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Form filling assistance</span>
+            </li>
+          </ul>
+          <a href="services/government.html" class="px-6 py-3 btn-glow text-white font-medium rounded-lg inline-block">
+            Try Government Assistant
+          </a>
+        </div>
+        <div class="order-first lg:order-last">
+          <div class="gradient-border">
+            <div class="relative rounded-xl overflow-hidden">
+              <img 
+                src="https://placehold.co/600x400/1e293b/3b82f6?text=Government+Services" 
+                alt="Government Services"
+                class="w-full h-auto"
+              >
+              <div class="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-6">
+                <div class="glass-card p-4 rounded-lg">
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
+                    <span class="text-sm font-medium text-white">AI Assistant</span>
+                  </div>
+                  <p class="text-slate-300 text-sm">
+                    "How can I assist you with government services today?"
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="py-20 bg-[#0f172a] relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a] to-[#020617]"></div>
+    <div class="container mx-auto px-4 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <div class="gradient-border">
+            <div class="relative rounded-xl overflow-hidden">
+              <img 
+                src="https://placehold.co/600x400/1e293b/ef4444?text=Emergency+Services" 
+                alt="Emergency Services"
+                class="w-full h-auto"
+              >
+              <div class="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-6">
+                <div class="glass-card p-4 rounded-lg">
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="w-3 h-3 rounded-full bg-rose-500 animate-pulse"></div>
+                    <span class="text-sm font-medium text-white">AI Assistant</span>
+                  </div>
+                  <p class="text-slate-300 text-sm">
+                    "I'm here to help with your emergency. What's your situation?"
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="inline-block mb-4">
+            <span class="px-3 py-1 text-xs font-semibold bg-gradient-to-r from-rose-500 to-red-500 rounded-full">EMERGENCY</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Emergency Helpline</h2>
+          <p class="text-slate-300 mb-6">Quick response system for urgent situations with real-time tracking.</p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start">
+              <span class="text-rose-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">AI-based voice SOS for domestic violence, accidents, or distress cases</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-rose-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Real-time location tracking and connecting to authorities</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-rose-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Automated alerts to emergency services</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-rose-500 mr-2 mt-1">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <span class="text-slate-300">Follow-up support and case tracking</span>
+            </li>
+          </ul>
+          <a href="services/emergency.html" class="px-6 py-3 bg-gradient-to-r from-rose-600 to-red-600 hover:shadow-[0_0_15px_rgba(225,29,72,0.7)] text-white font-medium rounded-lg inline-block transition-all">
+            Try Emergency Assistant
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- How It Works -->
+  <section class="py-20 bg-[#0f172a] relative" id="how-it-works">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a] to-[#020617]"></div>
+    <div class="container mx-auto px-4 relative z-10">
+      <div class="text-center mb-16">
+        <div class="inline-block mb-4">
+          <span class="px-3 py-1 text-xs font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full">PROCESS</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white neon-text">How It Works</h2>
+        <p class="text-slate-300 max-w-2xl mx-auto">
+          Our AI-powered helpline makes getting assistance simple and efficient.
+          Here's how the process works from start to finish.
+        </p>
+      </div>
+      
+      <div class="relative">
+        <!-- Connection line -->
+        <div class="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-purple-600/20 -translate-y-1/2 hidden md:block"></div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+          <!-- Step 1 -->
+          <div class="flex flex-col items-center text-center">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 w-16 h-16 rounded-full flex items-center justify-center mb-6 shadow-lg hover:shadow-[0_0_15px_rgba(59,130,246,0.7)] transition-all">
+              <i class="fas fa-phone-alt text-2xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white">Initiate Contact</h3>
+            <p class="text-slate-300">Call the helpline or use the chat interface to connect with our AI assistant.</p>
+          </div>
+          
+          <!-- Step 2 -->
+          <div class="flex flex-col items-center text-center">
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mb-6 shadow-lg hover:shadow-[0_0_15px_rgba(99,102,241,0.7)] transition-all">
+              <i class="fas fa-comment-alt text-2xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white">AI Processes Request</h3>
+            <p class="text-slate-300">Our AI analyzes your query using Natural Language Understanding to extract intent and context.</p>
+          </div>
+          
+          <!-- Step 3 -->
+          <div class="flex flex-col items-center text-center">
+            <div class="bg-gradient-to-r from-purple-600 to-violet-600 w-16 h-16 rounded-full flex items-center justify-center mb-6 shadow-lg hover:shadow-[0_0_15px_rgba(139,92,246,0.7)] transition-all">
+              <i class="fas fa-check-circle text-2xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white">Receive Assistance</h3>
+            <p class="text-slate-300">Get immediate help or be connected to a human agent for complex cases.</p>
+          </div>
+          
+          <!-- Step 4 -->
+          <div class="flex flex-col items-center text-center">
+            <div class="bg-gradient-to-r from-violet-600 to-fuchsia-600 w-16 h-16 rounded-full flex items-center justify-center mb-6 shadow-lg hover:shadow-[0_0_15px_rgba(139,92,246,0.7)] transition-all">
+              <i class="fas fa-arrow-right text-2xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white">Track Progress</h3>
+            <p class="text-slate-300">Follow your case with real-time updates via SMS, WhatsApp, or in-app notifications.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- CTA Section -->
+  <section class="py-20 bg-gradient-to-r from-blue-600 to-indigo-600 text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJncmlkIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0gNDAgMCBMIDAgMCAwIDQwIiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC4xIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIiAvPjwvc3ZnPg==')] opacity-20"></div>
+    </div>
+    <div class="container mx-auto px-4 text-center relative z-10">
+      <h2 class="text-3xl md:text-4xl font-bold mb-6 neon-text">Ready to Experience the Future of Citizen Support?</h2>
+      <p class="text-white/80 max-w-2xl mx-auto mb-8">
+        Our AI Citizen Helpline is available 24/7 to assist with government services, legal advice, 
+        medical guidance, and emergency support.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button class="px-6 py-3 bg-white text-indigo-600 font-medium rounded-lg hover:bg-blue-50 transition-all hover:shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+          Try Demo
+        </button>
+        <a href="contact.html" class="px-6 py-3 cyberpunk-btn rounded-lg transition-all">
+          Contact Us
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer class="bg-[#0f172a] text-white py-12 relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0f172a] to-[#020617]"></div>
+    <div class="container mx-auto px-4 relative z-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-xl font-bold mb-4 neon-text">CitiVoice: AI Citizen Helpline</h3>
+          <p class="text-slate-400 mb-4">AI-powered assistance for all citizens, available anytime, anywhere.</p>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Services</h3>
+          <ul class="space-y-2">
+            <li><a href="services/government.html" class="text-slate-400 hover:text-white transition-colors animated-underline">Government Assistance</a></li>
+            <li><a href="services/legal.html" class="text-slate-400 hover:text-white transition-colors animated-underline">Legal Support</a></li>
+            <li><a href="services/medical.html" class="text-slate-400 hover:text-white transition-colors animated-underline">Medical Help</a></li>
+            <li><a href="services/emergency.html" class="text-slate-400 hover:text-white transition-colors animated-underline">Emergency Services</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Resources</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-slate-400 hover:text-white transition-colors animated-underline">Help Center</a></li>
+            <li><a href="#" class="text-slate-400 hover:text-white transition-colors animated-underline">Privacy Policy</a></li>
+            <li><a href="#" class="text-slate-400 hover:text-white transition-colors animated-underline">Terms of Service</a></li>
+            <li><a href="#" class="text-slate-400 hover:text-white transition-colors animated-underline">Accessibility</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Contact</h3>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <i class="fas fa-map-marker-alt mt-1 mr-2 text-slate-400"></i>
+              <span class="text-slate-400">123 AI Plaza, Digital City</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-phone-alt mt-1 mr-2 text-slate-400"></i>
+              <span class="text-slate-400">+1 (800) AI-HELP</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-envelope mt-1 mr-2 text-slate-400"></i>
+              <span class="text-slate-400">support@citivoice.ai</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 mt-8 pt-8 text-center text-slate-500">
+        <p>&copy; 2025 CitiVoice - AI Citizen Helpline. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Scripts -->
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    // Hero section animations
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animate hero content
+      const heroText = document.getElementById('hero-text');
+      const heroChat = document.getElementById('hero-chat');
+      
+      setTimeout(() => {
+        heroText.classList.add('transition-all', 'duration-800');
+        heroText.classList.remove('opacity-0');
+        heroText.classList.add('opacity-100');
+      }, 300);
+      
+      setTimeout(() => {
+        heroChat.classList.add('transition-all', 'duration-800');
+        heroChat.classList.remove('opacity-0');
+        heroChat.classList.add('opacity-100');
+      }, 600);
+      
+      // Create animated background elements
+      const animatedBg = document.getElementById('animated-bg');
+      
+      for (let i = 0; i < 20; i++) {
+        const circle = document.createElement('div');
+        circle.classList.add('bg-blur-circle', 'animate-float');
+        
+        // Random size
+        const size = Math.random() * 300 + 50;
+        circle.style.width = `${size}px`;
+        circle.style.height = `${size}px`;
+        
+        // Random position
+        circle.style.left = `${Math.random() * 100}%`;
+        circle.style.top = `${Math.random() * 100}%`;
+        
+        // Random animation duration
+        circle.style.animationDuration = `${Math.random() * 10 + 10}s`;
+        
+        animatedBg.appendChild(circle);
+      }
+      
+      // Parallax effect on scroll
+      window.addEventListener('scroll', function() {
+        const scrollY = window.scrollY;
+        const heroContent = document.getElementById('hero-content');
+        
+        if (heroContent) {
+          heroContent.style.transform = `translateY(${scrollY * 0.2}px)`;
+        }
+      });
+      
+      // Initialize 3D model
+      initThreeModel();
+      
+      // Initialize particles
+      initParticles();
+      
+      // Add glitch effect to elements with glitch class
+      const glitchElements = document.querySelectorAll('.glitch');
+      glitchElements.forEach(el => {
+        el.setAttribute('data-text', el.textContent);
+      });
+      
+      // Add holographic effect to cards
+      const holoCards = document.querySelectorAll('.holographic-card');
+      holoCards.forEach(card => {
+        card.addEventListener('mousemove', function(e) {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          
+          const angleX = (y - centerY) / 10;
+          const angleY = (centerX - x) / 10;
+          
+          card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+          
+          const percentX = x / rect.width * 100;
+          const percentY = y / rect.height * 100;
+          
+          card.querySelector('.icon-container')?.style.boxShadow = `
+            ${(percentX - 50) / 10}px ${(percentY - 50) / 10}px 15px rgba(99, 102, 241, 0.3)
+          `;
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+          card.querySelector('.icon-container')?.style.boxShadow = '';
+        });
+      });
+    });
+    
+    // Particles background
+    function initParticles() {
+      if (typeof particlesJS !== 'undefined') {
+        particlesJS("particles-js", {
+          particles: {
+            number: {
+              value: 80,
+              density: {
+                enable: true,
+                value_area: 800
+              }
+            },
+            color: {
+              value: "#3b82f6"
+            },
+            shape: {
+              type: "circle",
+              stroke: {
+                width: 0,
+                color: "#000000"
+              },
+              polygon: {
+                nb_sides: 5
+              }
+            },
+            opacity: {
+              value: 0.5,
+              random: true,
+              anim: {
+                enable: true,
+                speed: 1,
+                opacity_min: 0.1,
+                sync: false
+              }
+            },
+            size: {
+              value: 3,
+              random: true,
+              anim: {
+                enable: true,
+                speed: 2,
+                size_min: 0.1,
+                sync: false
+              }
+            },
+            line_linked: {
+              enable: true,
+              distance: 150,
+              color: "#3b82f6",
+              opacity: 0.2,
+              width: 1
+            },
+            move: {
+              enable: true,
+              speed: 1,
+              direction: "none",
+              random: true,
+              straight: false,
+              out_mode: "out",
+              bounce: false,
+              attract: {
+                enable: false,
+                rotateX: 600,
+                rotateY: 1200
+              }
+            }
+          },
+          interactivity: {
+            detect_on: "canvas",
+            events: {
+              onhover: {
+                enable: true,
+                mode: "grab"
+              },
+              onclick: {
+                enable: true,
+                mode: "push"
+              },
+              resize: true
+            },
+            modes: {
+              grab: {
+                distance: 140,
+                line_linked: {
+                  opacity: 0.5
+                }
+              },
+              bubble: {
+                distance: 400,
+                size: 4,
+                duration: 2,
+                opacity: 0.8,
+                speed: 3
+              },
+              repulse: {
+                distance: 200,
+                duration: 0.4
+              },
+              push: {
+                particles_nb: 4
+              },
+              remove: {
+                particles_nb: 2
+              }
+            }
+          },
+          retina_detect: true
+        });
+      }
+    }
+    // 3D Model
+    function initThreeModel() {
+      const container = document.getElementById('three-model-container');
+      
+      if (!container) return;
+      
+      // Scene setup
+      const scene = new THREE.Scene();
+      
+      // Camera setup
+      const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+      camera.position.z = 5;
+      
+      // Renderer setup
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setClearColor(0x000000, 0);
+      container.appendChild(renderer.domElement);
+      
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      scene.add(ambientLight);
+      
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      directionalLight.position.set(5, 5, 5);
+      scene.add(directionalLight);
+      
+      // Create a group for the floating objects
+      const group = new THREE.Group();
+      scene.add(group);
+      
+      // Create floating spheres representing different services
+      const colors = [0x3b82f6, 0x6366f1, 0x8b5cf6, 0xec4899];
+      const spheres = [];
+      
+      for (let i = 0; i < 4; i++) {
+        const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        const material = new THREE.MeshStandardMaterial({ 
+          color: colors[i],
+          roughness: 0.3,
+          metalness: 0.7,
+          emissive: colors[i],
+          emissiveIntensity: 0.2
+        });
+        
+        const sphere = new THREE.Mesh(geometry, material);
+        
+        // Position spheres in a circle
+        const angle = (i / 4) * Math.PI * 2;
+        sphere.position.x = Math.cos(angle) * 2;
+        sphere.position.y = Math.sin(angle) * 2;
+        
+        group.add(sphere);
+        spheres.push(sphere);
+      }
+      
+      // Create connecting lines between spheres
+      const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3 });
+      
+      for (let i = 0; i < spheres.length; i++) {
+        for (let j = i + 1; j < spheres.length; j++) {
+          const points = [];
+          points.push(spheres[i].position);
+          points.push(spheres[j].position);
+          
+          const geometry = new THREE.BufferGeometry().setFromPoints(points);
+          const line = new THREE.Line(geometry, lineMaterial);
+          group.add(line);
+        }
+      }
+      
+      // Create a central sphere representing the AI core
+      const coreGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+      const coreMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xffffff,
+        roughness: 0.1,
+        metalness: 0.9,
+        emissive: 0xffffff,
+        emissiveIntensity: 0.2
+      });
+      
+      const core = new THREE.Mesh(coreGeometry, coreMaterial);
+      group.add(core);
+      
+      // Animation loop
+      const animate = () => {
+        requestAnimationFrame(animate);
+        
+        // Rotate the entire group
+        group.rotation.y += 0.005;
+        
+        // Animate individual spheres
+        spheres.forEach((sphere, i) => {
+          const time = Date.now() * 0.001;
+          sphere.position.y += Math.sin(time + i) * 0.005;
+        });
+        
+        // Pulse the core
+        const scale = 1 + Math.sin(Date.now() * 0.002) * 0.05;
+        core.scale.set(scale, scale, scale);
+        
+        renderer.render(scene, camera);
+      };
+      
+      animate();
+      
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        if (!container) return;
+        
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+      
+      // Add interactive behavior
+      container.addEventListener('mousemove', (e) => {
+        const rect = container.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / container.clientWidth) * 2 - 1;
+        const y = -((e.clientY - rect.top) / container.clientHeight) * 2 + 1;
+        
+        group.rotation.y = x * 0.5;
+        group.rotation.x = y * 0.5;
+      });
+    }
+  </script>
+</body>
+</html>
