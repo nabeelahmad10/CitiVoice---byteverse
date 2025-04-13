@@ -25,7 +25,7 @@ app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
 
 # -------------------- SOLUTION PROVIDER FUNCTIONS & ROUTES --------------------
 # Mistral API Functions for solution provider
-MISTRAL_API_KEY = "jDYH4MlYvmp0cI5hwcaue34k2642oKVX"  # Replace with your actual API key
+MISTRAL_API_KEY = "yourapikey"  # Replace with your actual API key
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
 
 def call_mistral_api(prompt, model="mistral-large-latest"):
@@ -137,7 +137,7 @@ def dummy_dataset_usage():
         print(f"Error loading dataset {dataset_file}: {e}")
 
 # -------------------- LEGAL ASSISTANT SETUP --------------------
-LEGAL_API_KEY = "jDYH4MlYvmp0cI5hwcaue34k2642oKVX"
+LEGAL_API_KEY = "yourapikey"  # Replace with your actual API key
 LEGAL_MODEL = "mistral-medium"
 LEGAL_ENDPOINT = "https://api.mistral.ai/v1/chat/completions"
 legal_token = 0
@@ -265,7 +265,7 @@ def stream_response_medical(user_input, token, language="en"):
             socketio.emit('thinking_status', {'status': False}, namespace='/medical')
 
 # -------------------- GOVERNMENT ASSISTANT SETUP --------------------
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyAF4hfa-UGF2MzWeYXS1eesyxPqojfkFMs")  # Replace with your actual Gemini API key
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "yourapikey")  # Replace with your actual Gemini API key
 GEMINI_MODEL = "gemini-1.5-pro"
 genai.configure(api_key=GEMINI_API_KEY)
 government_token = 0
