@@ -1,4 +1,6 @@
 # CitiVoice - A 24/7 Citizen Helpline 
+Video Link: https://drive.google.com/drive/u/2/folders/1AcyRL_qj7vdBO0l1s-YAboAj449_U_dh
+App Link: https://drive.google.com/file/d/1MySPyxDV1eXRrs01DtHaX06aokuJW2vO/view?usp=sharing
 
 CitiVoice is a dynamic platform that connects citizens with vital support services around the clock. Whether you need medical assistance, legal advice, government services, emergency help, or a legal/medical document reader and summarizer, CitiVoice provides a simple and intuitive interface to access all the support you need.
 
@@ -41,7 +43,7 @@ Install all required dependencies using pip. You can either refer to the `requir
 ```bash
 pip install requests SpeechRecognition Flask flask-socketio pdf2image pytesseract Pillow PyMuPDF langdetect google-generativeai gTTS
 ```
-### 3. Run the Application
+### 3. Run the Website
 
 
 1. Open the `combined.py` file in your preferred code editor.
@@ -50,7 +52,11 @@ pip install requests SpeechRecognition Flask flask-socketio pdf2image pytesserac
 4. From the main website, you can navigate to the medical, problem solver, government, emergency, and legal sections to interact and use the services.
 
 
+### 4. Run the Mobile Application
 
+1. copy paste the `main.dart` file in your android studio.
+2. Run the file to start the emulator and build.
+3. From the main interfeace, you can navigate to the medical, problem solver, government, emergency, and legal sections to interact and use the services.
 
 ### Copyright (©) 2025 CitiVoice
 
