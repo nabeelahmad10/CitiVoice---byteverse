@@ -7,7 +7,7 @@ App Link: https://drive.google.com/file/d/1MySPyxDV1eXRrs01DtHaX06aokuJW2vO/view
 
 ## Important Files
 
-Only these files are essential for running the application:
+Only these files are essential for running the web application:
 
 - `combined.py`
 - `legal.html`
@@ -55,7 +55,7 @@ pip install requests SpeechRecognition Flask flask-socketio pdf2image pytesserac
 
 ### 4. Run the Mobile Application
 
-1. copy paste the `main.dart` file in your android studio.
+1. Copy paste the `main.dart` file in your android studio.
 2. Run the file to start the emulator and build.
 3. From the main interfeace, you can navigate to the medical, problem solver, government, emergency, and legal sections to interact and use the services.
 
