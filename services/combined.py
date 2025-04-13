@@ -21,7 +21,7 @@ from gtts import gTTS
 # -------------------- App & SocketIO Initialization --------------------
 app = Flask(__name__)
 socketio = SocketIO(app)
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB file upload limit
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024 
 
 # -------------------- SOLUTION PROVIDER FUNCTIONS & ROUTES --------------------
 # Mistral API Functions for solution provider
